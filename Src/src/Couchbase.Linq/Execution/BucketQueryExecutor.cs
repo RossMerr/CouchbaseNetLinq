@@ -268,6 +268,8 @@ namespace Couchbase.Linq.Execution
 
             var methodCallTranslatorProvider = new DefaultMethodCallTranslatorProvider();
 
+            VersionProvider.Setup(Log);
+
             var queryGenerationContext = new N1QlQueryGenerationContext
             {
                 MemberNameResolver = memberNameResolver,

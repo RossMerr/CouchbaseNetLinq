@@ -14,7 +14,7 @@ namespace Couchbase.Linq
     /// The main entry point and executor of the query.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class BucketQueryable<T> : QueryableBase<T>, IBucketQueryable<T>, IBucketQueryExecutorProvider
+    public class BucketQueryable<T> : QueryableBase<T>, IBucketQueryable<T>, IBucketQueryExecutorProvider
     {
         private readonly ILogger Log;
 
@@ -65,10 +65,9 @@ namespace Couchbase.Linq
         /// <remarks>Used to build new expressions as more methods are applied to the query.</remarks>
         /// <param name="provider">The provider.</param>
         /// <param name="expression">The expression.</param>
-        public BucketQueryable(IQueryProvider provider, Expression expression, ILogger logger)
+        public BucketQueryable(IQueryProvider provider, Expression expression)
             : base(provider, expression)
         {
-            Log = logger;
             _bucketQueryExecutor = (IBucketQueryExecutor) ((DefaultQueryProvider) provider).Executor;
         }
 

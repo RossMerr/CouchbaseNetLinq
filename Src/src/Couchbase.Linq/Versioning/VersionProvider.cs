@@ -10,16 +10,24 @@ namespace Couchbase.Linq.Versioning
     /// <summary>
     /// Singleton for the <see cref="IVersionProvider"/> implementation in use for query generation.
     /// </summary>
-    internal static class VersionProvider
+    public static class VersionProvider
     {
         /// <summary>
         /// Singleton for the <see cref="IVersionProvider"/> implementation in use for query generation.
         /// </summary>
         public static IVersionProvider Current { get; set; }
+        
+        static VersionProvider()
+        {
+            Current = null;
+        }
 
-        //static VersionProvider(ILogger logger)
-        //{
-        //    Current = new DefaultVersionProvider(logger);
-        //}
+        public static void Setup(ILogger logger)
+        {
+            if (Current == null)
+            {
+                Current = new DefaultVersionProvider(logger);
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ namespace Couchbase.Linq.Versioning
     /// <summary>
     /// Provides the Couchbase version for a bucket.
     /// </summary>
-    internal interface IVersionProvider
+    public interface IVersionProvider
     {
         /// <summary>
         /// Gets the version of the cluster hosting a bucket, using the cluster's

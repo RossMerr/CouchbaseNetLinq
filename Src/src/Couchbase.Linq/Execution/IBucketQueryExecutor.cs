@@ -12,7 +12,7 @@ namespace Couchbase.Linq.Execution
     /// <summary>
     /// Extends <see cref="IQueryExecutor"/> with routines to execute a <see cref="LinqQueryRequest"/> asynchronously.
     /// </summary>
-    internal interface IBucketQueryExecutor : IQueryExecutor
+    public interface IBucketQueryExecutor : IQueryExecutor
     {
         /// <summary>
         /// Specifies the consistency guarantee/constraint for index scanning.

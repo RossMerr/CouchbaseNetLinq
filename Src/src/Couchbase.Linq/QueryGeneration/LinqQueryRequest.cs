@@ -14,7 +14,7 @@ namespace Couchbase.Linq.QueryGeneration
     /// <summary>
     /// Wraps a standard QueryRequest with some additional information used internally.
     /// </summary>
-    internal class LinqQueryRequest : QueryRequest
+    public class LinqQueryRequest : QueryRequest
     {
         private readonly ScalarResultBehavior _scalarResultBehavior;
 

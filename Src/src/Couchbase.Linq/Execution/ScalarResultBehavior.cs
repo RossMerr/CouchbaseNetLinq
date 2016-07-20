@@ -11,7 +11,7 @@ namespace Couchbase.Linq.Execution
     /// from an attribute named "result".  This typically applies to aggregate operations, as well as
     /// <see cref="Queryable.Any{T}(IQueryable{T})"/> and <see cref="Queryable.All{T}"/> operations.
     /// </summary>
-    internal class ScalarResultBehavior
+    public class ScalarResultBehavior
     {
         /// <summary>
         /// If true, indicates that result extraction is required.  The query should be executed with a return type
