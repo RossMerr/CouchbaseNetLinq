@@ -22,11 +22,11 @@ namespace Couchbase.Linq.Versioning
             Current = null;
         }
 
-        public static void Setup(ILogger logger)
+        public static void Setup(ILoggerFactory loggerFactory)
         {
             if (Current == null)
             {
-                Current = new DefaultVersionProvider(logger);
+                Current = new DefaultVersionProvider(loggerFactory);
             }
         }
     }

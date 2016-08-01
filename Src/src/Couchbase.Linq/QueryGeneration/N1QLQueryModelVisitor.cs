@@ -22,6 +22,7 @@ namespace Couchbase.Linq.QueryGeneration
 {
     internal class N1QlQueryModelVisitor : QueryModelVisitorBase, IN1QlQueryModelVisitor
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
 
         #region Constants
@@ -77,10 +78,11 @@ namespace Couchbase.Linq.QueryGeneration
         }
 
         public N1QlQueryModelVisitor(IMemberNameResolver memberNameResolver, IMethodCallTranslatorProvider methodCallTranslatorProvider,
-            ITypeSerializer serializer, ILogger logger)
+            ITypeSerializer serializer, ILoggerFactory loggerFactory)
         {
-            Log = logger;
-            _queryPartsAggregator = new QueryPartsAggregator(Log);
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<N1QlQueryModelVisitor>();
+            _queryPartsAggregator = new QueryPartsAggregator(_loggerFactory);
             _queryGenerationContext = new N1QlQueryGenerationContext()
             {
                 //MemberNameResolver = new JsonNetMemberNameResolver(ClusterHelper.Get().Configuration.SerializationSettings.ContractResolver),
@@ -91,15 +93,16 @@ namespace Couchbase.Linq.QueryGeneration
             };
         }
 
-        public N1QlQueryModelVisitor(N1QlQueryGenerationContext queryGenerationContext, ILogger logger) : this(queryGenerationContext, false, logger)
+        public N1QlQueryModelVisitor(N1QlQueryGenerationContext queryGenerationContext, ILoggerFactory loggerFactory) : this(queryGenerationContext, false, loggerFactory)
         {
         }
 
         /// <exception cref="ArgumentNullException"><paramref name="queryGenerationContext"/> is <see langword="null" />.</exception>
-        public N1QlQueryModelVisitor(N1QlQueryGenerationContext queryGenerationContext, bool isSubQuery, ILogger logger)
+        public N1QlQueryModelVisitor(N1QlQueryGenerationContext queryGenerationContext, bool isSubQuery, ILoggerFactory loggerFactory)
         {
-            Log = logger;
-            _queryPartsAggregator = new QueryPartsAggregator(Log);
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<N1QlQueryModelVisitor>();
+            _queryPartsAggregator = new QueryPartsAggregator(_loggerFactory);
             if (queryGenerationContext == null)
             {
                 throw new ArgumentNullException("queryGenerationContext");
@@ -361,7 +364,7 @@ namespace Couchbase.Linq.QueryGeneration
                     if (!_isAggregated)
                     {
                         expression = N1QlExpressionTreeVisitor.GetN1QlSelectNewExpression(selector,
-                            _queryGenerationContext, Log);
+                            _queryGenerationContext, _loggerFactory);
                     }
                     else
                     {
@@ -643,7 +646,7 @@ namespace Couchbase.Linq.QueryGeneration
 
         private void VisitUnion(SubQueryExpression source, bool distinct)
         {
-            var queryModelVisitor = new N1QlQueryModelVisitor(_queryGenerationContext.CloneForUnion(), Log);
+            var queryModelVisitor = new N1QlQueryModelVisitor(_queryGenerationContext.CloneForUnion(), _loggerFactory);
 
             queryModelVisitor.VisitQueryModel(source.QueryModel);
             var unionQuery = queryModelVisitor.GetQuery();
@@ -1253,7 +1256,7 @@ namespace Couchbase.Linq.QueryGeneration
                 expression = TransformingExpressionVisitor.Transform(expression, _groupingExpressionTransformerRegistry);
             }
 
-            return N1QlExpressionTreeVisitor.GetN1QlExpression(expression, _queryGenerationContext, Log);
+            return N1QlExpressionTreeVisitor.GetN1QlExpression(expression, _queryGenerationContext, _loggerFactory);
         }
 
         private string GetExtentName(IQuerySource querySource)

@@ -18,15 +18,17 @@ namespace Couchbase.Linq.Versioning
     /// </summary>
     internal class DefaultVersionProvider : IVersionProvider
     {
+        private readonly ILoggerFactory _loggerFactory;
         private static readonly Random Random = new Random();
         private readonly ILogger Log;
 
         private readonly ConcurrentDictionary<Uri, Version> _versionsByUri = new ConcurrentDictionary<Uri, Version>();
         private readonly object _lock = new object();
 
-        public DefaultVersionProvider(ILogger logger)
+        public DefaultVersionProvider(ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<DefaultVersionProvider>();
         }
 
         /// <summary>

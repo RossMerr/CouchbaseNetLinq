@@ -14,6 +14,7 @@ namespace Couchbase.Linq.QueryGeneration
 {
     internal class N1QlExpressionTreeVisitor : ThrowingExpressionVisitor
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
 
         private readonly StringBuilder _expression = new StringBuilder();
@@ -24,9 +25,10 @@ namespace Couchbase.Linq.QueryGeneration
 
         private readonly N1QlQueryGenerationContext _queryGenerationContext;
 
-        protected N1QlExpressionTreeVisitor(N1QlQueryGenerationContext queryGenerationContext, ILogger logger)
+        protected N1QlExpressionTreeVisitor(N1QlQueryGenerationContext queryGenerationContext, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<N1QlExpressionTreeVisitor>();
             if (queryGenerationContext == null)
             {
                 throw new ArgumentNullException("queryGenerationContext");
@@ -35,16 +37,16 @@ namespace Couchbase.Linq.QueryGeneration
             _queryGenerationContext = queryGenerationContext;
         }
 
-        public static string GetN1QlExpression(Expression expression, N1QlQueryGenerationContext queryGenerationContext, ILogger logger)
+        public static string GetN1QlExpression(Expression expression, N1QlQueryGenerationContext queryGenerationContext, ILoggerFactory loggerFactory)
         {
-            var visitor = new N1QlExpressionTreeVisitor(queryGenerationContext, logger);
+            var visitor = new N1QlExpressionTreeVisitor(queryGenerationContext, loggerFactory);
             visitor.Visit(expression);
             return visitor.GetN1QlExpression();
         }
 
-        public static string GetN1QlSelectNewExpression(Expression expression, N1QlQueryGenerationContext queryGenerationContext, ILogger logger)
+        public static string GetN1QlSelectNewExpression(Expression expression, N1QlQueryGenerationContext queryGenerationContext, ILoggerFactory loggerFactory)
         {
-            var visitor = new N1QlExpressionTreeVisitor(queryGenerationContext, logger);
+            var visitor = new N1QlExpressionTreeVisitor(queryGenerationContext, loggerFactory);
             visitor.VisitSelectNewExpression(expression);
             return visitor.GetN1QlExpression();
         }
@@ -615,7 +617,7 @@ namespace Couchbase.Linq.QueryGeneration
 
         protected override Expression VisitSubQuery(SubQueryExpression expression)
         {
-            var modelVisitor = new N1QlQueryModelVisitor(_queryGenerationContext, true, Log);
+            var modelVisitor = new N1QlQueryModelVisitor(_queryGenerationContext, true, _loggerFactory);
 
             modelVisitor.VisitQueryModel(expression.QueryModel);
             _expression.Append(modelVisitor.GetQuery());

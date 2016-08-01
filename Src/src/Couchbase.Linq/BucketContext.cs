@@ -25,7 +25,7 @@ namespace Couchbase.Linq
     public class BucketContext : IBucketContext, IChangeTrackableContext
     {
         private readonly ILogger Log;
-
+        private readonly ILoggerFactory _loggerFactory;
         private readonly IBucket _bucket;
         private readonly ConcurrentDictionary<Type, PropertyInfo>_cachedKeyProperties = new ConcurrentDictionary<Type, PropertyInfo>();
         private readonly ConcurrentDictionary<string, object> _tracked = new ConcurrentDictionary<string, object>();
@@ -41,9 +41,10 @@ namespace Couchbase.Linq
         /// Creates a new BucketContext for a given Couchbase bucket.
         /// </summary>
         /// <param name="bucket">Bucket referenced by the new BucketContext.</param>
-        public BucketContext(IBucket bucket, ILogger logger)
+        public BucketContext(IBucket bucket, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = loggerFactory.CreateLogger<BucketContext>();
             _bucket = bucket;
         }
 
@@ -66,7 +67,7 @@ namespace Couchbase.Linq
         /// <returns><see cref="IQueryable{T}" /> which can be used to query the bucket.</returns>
         public IQueryable<T> Query<T>()
         {
-            return DocumentFilterManager.ApplyFilters(new BucketQueryable<T>(_bucket, Configuration, this, Log));
+            return DocumentFilterManager.ApplyFilters(new BucketQueryable<T>(_bucket, Configuration, this, _loggerFactory));
         }
 
         /// <summary>

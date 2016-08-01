@@ -16,6 +16,8 @@ namespace Couchbase.Linq
     /// <typeparam name="T"></typeparam>
     public class BucketQueryable<T> : QueryableBase<T>, IBucketQueryable<T>, IBucketQueryExecutorProvider
     {
+        private readonly ILoggerFactory _loggerFactory;
+
         private readonly ILogger Log;
 
         private readonly IBucket _bucket;
@@ -46,10 +48,11 @@ namespace Couchbase.Linq
         /// <param name="executor">The executor.</param>
         /// <exception cref="System.ArgumentNullException">bucket</exception>
         /// <exception cref="ArgumentNullException"><paramref name="bucket" /> is <see langword="null" />.</exception>
-        public BucketQueryable(IBucket bucket, IQueryParser queryParser, IBucketQueryExecutor executor, ILogger logger)
+        public BucketQueryable(IBucket bucket, IQueryParser queryParser, IBucketQueryExecutor executor, ILoggerFactory loggerFactory)
             : base(queryParser, executor)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<BucketQueryable<T>>();
             if (bucket == null)
             {
                 throw new ArgumentNullException("bucket");
@@ -79,10 +82,11 @@ namespace Couchbase.Linq
         /// <param name="bucketContext">The context object for tracking and managing changes to documents.</param>
         /// <exception cref="System.ArgumentNullException">bucket</exception>
         /// <exception cref="ArgumentNullException"><paramref name="bucket" /> is <see langword="null" />.</exception>
-        public BucketQueryable(IBucket bucket, ClientConfiguration configuration, IBucketContext bucketContext, ILogger logger)
-            : base(QueryParserHelper.CreateQueryParser(), new BucketQueryExecutor(bucket, configuration, bucketContext, logger))
+        public BucketQueryable(IBucket bucket, ClientConfiguration configuration, IBucketContext bucketContext, ILoggerFactory loggerFactory)
+            : base(QueryParserHelper.CreateQueryParser(), new BucketQueryExecutor(bucket, configuration, bucketContext, loggerFactory))
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<BucketQueryable<T>>();
             if (bucket == null)
             {
                 throw new ArgumentNullException("bucket");

@@ -9,11 +9,13 @@ namespace Couchbase.Linq.QueryGeneration
 {
     internal class QueryPartsAggregator
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
 
-        public QueryPartsAggregator(ILogger logger)
+        public QueryPartsAggregator(ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<QueryPartsAggregator>();
             FromParts = new List<N1QlFromQueryPart>();
             LetParts = new List<N1QlLetQueryPart>();
             WhereParts = new List<string>();

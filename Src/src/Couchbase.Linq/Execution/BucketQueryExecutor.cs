@@ -22,6 +22,7 @@ namespace Couchbase.Linq.Execution
 {
     internal class BucketQueryExecutor : IBucketQueryExecutor
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
         private readonly IBucket _bucket;
         private readonly ClientConfiguration _configuration;
@@ -59,9 +60,10 @@ namespace Couchbase.Linq.Execution
         /// <param name="bucket"><see cref="IBucket"/> to query.</param>
         /// <param name="configuration"><see cref="ClientConfiguration"/> used during the query.</param>
         /// <param name="bucketContext">The context object for tracking and managing changes to documents.</param>
-        public BucketQueryExecutor(IBucket bucket, ClientConfiguration configuration, IBucketContext bucketContext, ILogger logger)
+        public BucketQueryExecutor(IBucket bucket, ClientConfiguration configuration, IBucketContext bucketContext, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<BucketQueryExecutor>();
             _bucket = bucket;
             _configuration = configuration;
             _bucketContext = bucketContext;
@@ -268,7 +270,7 @@ namespace Couchbase.Linq.Execution
 
             var methodCallTranslatorProvider = new DefaultMethodCallTranslatorProvider();
 
-            VersionProvider.Setup(Log);
+            VersionProvider.Setup(_loggerFactory);
 
             var queryGenerationContext = new N1QlQueryGenerationContext
             {
@@ -279,7 +281,7 @@ namespace Couchbase.Linq.Execution
                 ClusterVersion = VersionProvider.Current.GetVersion(_bucket)
             };
 
-            var visitor = new N1QlQueryModelVisitor(queryGenerationContext, Log);
+            var visitor = new N1QlQueryModelVisitor(queryGenerationContext, _loggerFactory);
             visitor.VisitQueryModel(queryModel);
 
             var query = visitor.GetQuery();
