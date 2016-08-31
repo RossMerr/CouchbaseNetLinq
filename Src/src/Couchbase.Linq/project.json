@@ -3,7 +3,7 @@
 
   "dependencies": {
     "Castle.Core": "1.0.1",
-    "CouchbaseCore": "1.0.4",
+    "CouchbaseCore": "1.0.23",
     "NETStandard.Library": "1.6.0",
     "Newtonsoft.Json": "9.0.1",
     "Remotion.Linq": "2.1.1",
